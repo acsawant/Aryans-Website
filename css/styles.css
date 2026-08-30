@@ -1,0 +1,674 @@
+/* ==========================================================================
+   1. DESIGN TOKENS
+   Every color, font and spacing value lives here as a CSS custom property.
+   Change the palette in one place and the whole site follows.
+   ========================================================================== */
+
+:root {
+  /* --- Color: "Altitude" -------------------------------------------------- */
+  --bg:          #0A0F1C;   /* page base            */
+  --bg-alt:      #0E1526;   /* alternating sections */
+  --surface:     #141B2D;   /* cards                */
+  --line:        #1F2940;   /* hairline borders     */
+  --text:        #E8ECF4;   /* body copy            */
+  --muted:       #8A94A8;   /* captions, labels     */
+  --accent:      #E8833A;   /* the 10%              */
+  --accent-soft: rgba(232, 131, 58, 0.14);
+
+  /* --- Type --------------------------------------------------------------- */
+  --font-display: 'Archivo', system-ui, sans-serif;
+  --font-body:    'Public Sans', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+
+  --fs-hero: clamp(3.75rem, 15vw, 11rem);
+  --fs-h2:   clamp(1.65rem, 3.6vw, 2.7rem);
+  --fs-h3:   1.2rem;
+  --fs-body: 1.0625rem;
+  --fs-mono: 0.72rem;
+
+  /* --- Spacing (4px base scale) ------------------------------------------- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --sp-12: 3rem;
+  --sp-16: 4rem;
+  --sp-24: 6rem;
+
+  /* --- Motion ------------------------------------------------------------- */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur:  0.55s;
+
+  --radius: 6px;
+  --wrap:   1140px;
+}
+
+/* ==========================================================================
+   2. RESET + BASE
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+* { margin: 0; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+ul, ol { list-style: none; padding: 0; }
+
+a { color: inherit; text-decoration: none; }
+
+/* Keyboard focus must always be visible. Never remove this without a
+   replacement — it is the only way keyboard users can see where they are. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: var(--sp-4);
+  background: var(--accent);
+  color: var(--bg);
+  padding: var(--sp-3) var(--sp-4);
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  z-index: 100;
+}
+.skip-link:focus { left: var(--sp-4); }
+
+/* ==========================================================================
+   3. SHARED TYPE + LAYOUT UTILITIES
+   ========================================================================== */
+
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--sp-6);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-h2);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+.eyebrow {
+  color: var(--accent);
+  margin-bottom: var(--sp-4);
+}
+
+/* The accent bar on eyebrows is the small repeating structural mark. */
+.eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 28px;
+  height: 1px;
+  background: var(--accent);
+  vertical-align: middle;
+  margin-right: var(--sp-3);
+}
+
+.lede {
+  max-width: 54ch;
+  color: var(--muted);
+  margin-top: var(--sp-4);
+}
+
+.accent { color: var(--accent); }
+
+.section {
+  padding-block: var(--sp-24);
+  border-top: 1px solid var(--line);
+  /* Without this, jump links scroll the heading underneath the fixed nav. */
+  scroll-margin-top: 72px;
+}
+
+.section--alt { background: var(--bg-alt); }
+
+.section__title { max-width: 20ch; }
+
+.subhead {
+  margin-top: var(--sp-16);
+  margin-bottom: var(--sp-6);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--line);
+}
+
+/* ==========================================================================
+   4. NAV
+   ========================================================================== */
+
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-6);
+  padding: var(--sp-4) var(--sp-6);
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  border-bottom: 1px solid transparent;
+}
+
+.nav.is-scrolled {
+  background: rgba(10, 15, 28, 0.82);
+  backdrop-filter: blur(12px);
+  border-bottom-color: var(--line);
+}
+
+.nav__mark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  font-size: 1rem;
+}
+
+.nav__links {
+  display: flex;
+  gap: var(--sp-6);
+}
+
+.nav__links a {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.25s var(--ease);
+}
+
+.nav__links a:hover { color: var(--accent); }
+
+/* ==========================================================================
+   5. HERO
+   ========================================================================== */
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* A dusk horizon sitting under the name — the one ambient effect on the page. */
+.hero__glow {
+  position: absolute;
+  left: 50%;
+  bottom: -55%;
+  transform: translateX(-50%);
+  width: 140%;
+  aspect-ratio: 2 / 1;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(232, 131, 58, 0.22) 0%,
+    rgba(232, 131, 58, 0.06) 38%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.hero__inner { position: relative; }
+
+.hero__coords { margin-bottom: var(--sp-6); }
+
+.hero__name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-hero);
+  line-height: 0.86;
+  letter-spacing: -0.045em;
+  margin-bottom: var(--sp-6);
+}
+
+.hero__line {
+  font-size: clamp(1.05rem, 2.2vw, 1.4rem);
+  max-width: 34ch;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.hero__cue {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-16);
+  transition: color 0.25s var(--ease);
+}
+.hero__cue:hover { color: var(--accent); }
+
+.hero__cue-arrow {
+  display: inline-block;
+  animation: nudge 2.4s var(--ease) infinite;
+}
+
+@keyframes nudge {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(5px); }
+}
+
+/* ==========================================================================
+   6. ABOUT + SPEC SHEET
+   ========================================================================== */
+
+.about {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: var(--sp-16);
+  align-items: start;
+}
+
+.about__prose p {
+  color: var(--muted);
+  margin-top: var(--sp-4);
+  max-width: 52ch;
+}
+
+.about__prose .h2 { margin-bottom: var(--sp-6); }
+
+.specs {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--sp-8);
+}
+
+.specs__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--sp-4);
+  padding-block: var(--sp-3);
+  border-bottom: 1px solid var(--line);
+}
+
+.specs__row dd { font-weight: 500; text-align: right; }
+
+.gpa {
+  display: flex;
+  gap: var(--sp-8);
+  margin-top: var(--sp-8);
+}
+
+.gpa__item { display: flex; flex-direction: column; gap: var(--sp-1); }
+
+.gpa__num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--accent);
+  letter-spacing: -0.03em;
+}
+
+.specs__heading {
+  margin-top: var(--sp-8);
+  margin-bottom: var(--sp-4);
+  padding-top: var(--sp-6);
+  border-top: 1px solid var(--line);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  background: var(--accent-soft);
+  border: 1px solid rgba(232, 131, 58, 0.22);
+  border-radius: 999px;
+  padding: 5px 11px;
+}
+
+/* ==========================================================================
+   7. ATHLETICS ROSTER
+   ========================================================================== */
+
+.roster {
+  margin-top: var(--sp-12);
+  border-top: 1px solid var(--line);
+}
+
+.roster__item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-6);
+  padding-block: var(--sp-6);
+  border-bottom: 1px solid var(--line);
+  transition: padding-left 0.35s var(--ease), border-color 0.35s var(--ease);
+}
+
+.roster__item:hover {
+  padding-left: var(--sp-4);
+  border-bottom-color: var(--accent);
+}
+
+.roster__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 3vw, 2.1rem);
+  letter-spacing: -0.02em;
+  transition: color 0.35s var(--ease);
+}
+
+.roster__item:hover .roster__name { color: var(--accent); }
+
+.roster__note {
+  text-align: right;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  max-width: 34ch;
+}
+
+/* ==========================================================================
+   8. CARDS (hobbies, food)
+   ========================================================================== */
+
+.cards {
+  display: grid;
+  gap: var(--sp-6);
+  margin-top: var(--sp-12);
+}
+
+.cards--2 { grid-template-columns: repeat(2, 1fr); }
+.cards--3 { grid-template-columns: repeat(3, 1fr); }
+.cards--4 { grid-template-columns: repeat(4, 1fr); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform 0.4s var(--ease), border-color 0.4s var(--ease);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(232, 131, 58, 0.4);
+}
+
+.card__media { overflow: hidden; }
+
+.card__media img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  transition: transform 0.7s var(--ease);
+}
+
+.card:hover .card__media img { transform: scale(1.04); }
+
+.card__body { padding: var(--sp-6); }
+
+.card__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-h3);
+  letter-spacing: -0.01em;
+  margin-bottom: var(--sp-2);
+}
+
+.card__body p { color: var(--muted); font-size: 0.95rem; }
+
+.card--compact .card__body { padding: var(--sp-4) var(--sp-4) var(--sp-6); }
+
+/* ==========================================================================
+   9. THE PATH — signature element
+   The rail is drawn twice: a static hairline, and an accent line whose height
+   is driven by --path-progress (set from JS on scroll).
+   ========================================================================== */
+
+.path {
+  position: relative;
+  margin-top: var(--sp-16);
+  padding-left: var(--sp-12);
+  --path-progress: 0;
+}
+
+.path::before,
+.path::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+}
+
+.path::before { background: var(--line); }
+
+.path::after {
+  background: linear-gradient(to bottom, var(--accent), rgba(232, 131, 58, 0.35));
+  bottom: auto;
+  height: calc(var(--path-progress) * 100%);
+  transition: height 0.15s linear;
+}
+
+.path__wpt {
+  position: relative;
+  padding-bottom: var(--sp-16);
+}
+
+.path__wpt:last-child { padding-bottom: 0; }
+
+.path__dot {
+  position: absolute;
+  left: calc(var(--sp-12) * -1);
+  top: 4px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+  transition: background 0.45s var(--ease), border-color 0.45s var(--ease), box-shadow 0.45s var(--ease);
+}
+
+.path__wpt.is-active .path__dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 5px var(--accent-soft);
+}
+
+.path__meta { margin-bottom: var(--sp-3); }
+
+.path__id { color: var(--accent); }
+
+.path__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.15rem, 2.4vw, 1.55rem);
+  letter-spacing: -0.015em;
+  margin-bottom: var(--sp-2);
+}
+
+.path__desc { color: var(--muted); max-width: 52ch; }
+
+/* ==========================================================================
+   10. PLACES
+   ========================================================================== */
+
+.place {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  transition: transform 0.4s var(--ease), border-color 0.4s var(--ease);
+}
+
+.place:hover {
+  transform: translateY(-5px);
+  border-color: rgba(232, 131, 58, 0.4);
+}
+
+.place__media img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  transition: transform 0.8s var(--ease);
+}
+
+.place:hover .place__media img { transform: scale(1.05); }
+
+/* Gradient scrim so text stays readable over any photo you drop in. */
+.place__body {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: var(--sp-6) var(--sp-4) var(--sp-4);
+  background: linear-gradient(to top, rgba(10, 15, 28, 0.95) 35%, transparent);
+}
+
+.place__coords {
+  font-size: 0.62rem;
+  color: var(--accent);
+  margin-bottom: var(--sp-1);
+}
+
+.place__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+}
+
+.place__why {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  margin-top: var(--sp-1);
+}
+
+/* ==========================================================================
+   11. FOOTER
+   ========================================================================== */
+
+.footer {
+  border-top: 1px solid var(--line);
+  padding-block: var(--sp-8);
+}
+
+.footer__inner {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   12. SCROLL REVEAL
+   Elements start transparent, then settle when JS adds .is-visible.
+
+   Worth understanding why this uses an ANIMATION and not a TRANSITION:
+   several of these elements (.card, .roster__item) already have their own
+   hover transitions. A `transition` here would replace theirs, because both
+   are single-class selectors and this rule comes later in the file — the
+   hover effects would snap instead of easing. Animations live in a separate
+   layer and don't conflict.
+
+   `backwards` fill holds the start frame during the stagger delay, but
+   nothing persists after the animation ends — so hover transforms still work.
+   ========================================================================== */
+
+.reveal { opacity: 0; }
+
+.reveal.is-visible {
+  opacity: 1;
+  animation: reveal-in 0.7s var(--ease) backwards;
+}
+
+@keyframes reveal-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ==========================================================================
+   13. RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  :root { --sp-24: 4.5rem; --sp-16: 3rem; }
+
+  .about { grid-template-columns: 1fr; gap: var(--sp-12); }
+  .cards--4 { grid-template-columns: repeat(2, 1fr); }
+  .cards--3 { grid-template-columns: repeat(2, 1fr); }
+  .nav__links { display: none; }
+}
+
+@media (max-width: 620px) {
+  .cards--2,
+  .cards--3,
+  .cards--4 { grid-template-columns: 1fr; }
+
+  .roster__item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-2);
+  }
+
+  .roster__note { text-align: left; }
+
+  .path { padding-left: var(--sp-8); }
+  .path__dot { left: calc(var(--sp-8) * -1); }
+
+  .specs { padding: var(--sp-6); }
+  .gpa { gap: var(--sp-6); }
+}
+
+/* ==========================================================================
+   14. REDUCED MOTION
+   Some people get motion sick from scroll animation. The OS setting is a real
+   request — honor it. Content still appears, it just doesn't move.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal { opacity: 1; transform: none; }
+}
